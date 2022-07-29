@@ -5,12 +5,14 @@ import tw from "twin.macro";
 import NavBar from "../../components/navbar";
 import HeroSection from "./hero";
 import BookCard from "../../components/bookCard";
+import Marginer from "../../utils/marginer";
 
 const HomePage = () => {
   return (
     <PageContainer>
       <NavBar />
       <HeroSection />
+      <Marginer direction="vertical" margin="4em" />
       <BookCard />
     </PageContainer>
   )

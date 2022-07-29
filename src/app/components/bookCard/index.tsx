@@ -1,30 +1,50 @@
-import React from 'react'
-import styled from 'styled-components'
+import React, {useState} from 'react'
+import styled, {css} from 'styled-components'
 import tw from "twin.macro";
 
-import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
+import { faCalendarAlt, faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Marginer from "../../utils/marginer";
 import Button from "../button";
 
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import {SCREENS} from "../responsive";
+
 const BookCard = () => {
+
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [isStartCalendarOpen, setStartCalendarOpen] = useState(true);
+  const [endDate, setEndDate] = useState<Date>(new Date());
+  const [isEndCalendarOpen, setEndCalendarOpen] = useState(false);
+
+  const toggleStartDateCalendar = () => {
+    setStartCalendarOpen(!isStartCalendarOpen);
+    if (isEndCalendarOpen) setEndCalendarOpen(false);
+  };
+
+  const toggleEndDateCalendar = () => {
+    setEndCalendarOpen(!isEndCalendarOpen);
+    if (isStartCalendarOpen) setStartCalendarOpen(false);
+  };
+
   return (
    <BookCardContainer>
 
      <ItemContainer>
-       <Icon>
-         <FontAwesomeIcon icon={faCalendarAlt} />
-       </Icon>
-       <Name>Pick Up Date</Name>
+       <Icon><FontAwesomeIcon icon={faCalendarAlt} /></Icon>
+       <Name onClick={toggleStartDateCalendar}>Pick Up Date</Name>
+       <SmallIcon><FontAwesomeIcon icon={isStartCalendarOpen ? faCaretUp : faCaretDown} /></SmallIcon>
+       {isStartCalendarOpen && <DateCalendar value={startDate} onChange={setStartDate as any} />}
      </ItemContainer>
 
      <LineSeparator />
 
      <ItemContainer>
-       <Icon>
-         <FontAwesomeIcon icon={faCalendarAlt} />
-       </Icon>
-       <Name>Return Date</Name>
+       <Icon><FontAwesomeIcon icon={faCalendarAlt} /></Icon>
+       <Name onClick={toggleEndDateCalendar}>Return Date</Name>
+       <SmallIcon><FontAwesomeIcon icon={isEndCalendarOpen ? faCaretUp : faCaretDown} /></SmallIcon>
+       {isEndCalendarOpen && <DateCalendar offset value={endDate} onChange={setEndDate as any} />}
      </ItemContainer>
 
      <Marginer direction="horizontal" margin="2em" />
@@ -61,6 +81,15 @@ const Icon = styled.span`
   `};
 `;
 
+const SmallIcon = styled.span`
+  ${tw`
+    text-gray-500
+    fill-current
+    text-xs md:text-base
+    ml-2
+  `};
+`;
+
 const Name = styled.span`
   ${tw`
     text-gray-600
@@ -75,4 +104,18 @@ const LineSeparator = styled.span`
   height: 45%;
   ${tw`bg-gray-300 mr-2 ml-2 md:mr-5 md:ml-5`};
 `;
+
+const DateCalendar = styled(Calendar)`
+  position: absolute;
+  max-width: none;
+  user-select: none;
+  top: 3.5em;
+  left: 0;
+  ${({ offset }: any) => offset && css`left: -6em;`};
+  
+  @media (min-width: ${SCREENS.md}) {
+    top: 3.5em;
+    left: -2em;
+  }
+` as any;
 
