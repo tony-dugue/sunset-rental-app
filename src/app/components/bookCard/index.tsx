@@ -14,7 +14,7 @@ import {SCREENS} from "../responsive";
 const BookCard = () => {
 
   const [startDate, setStartDate] = useState<Date>(new Date());
-  const [isStartCalendarOpen, setStartCalendarOpen] = useState(true);
+  const [isStartCalendarOpen, setStartCalendarOpen] = useState(false);
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [isEndCalendarOpen, setEndCalendarOpen] = useState(false);
 
