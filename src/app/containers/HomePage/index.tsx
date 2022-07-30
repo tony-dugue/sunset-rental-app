@@ -9,6 +9,7 @@ import AboutUs from "./aboutUs";
 import BookCard from "../../components/bookCard";
 import NavBar from "../../components/navbar";
 import Marginer from "../../utils/marginer";
+import TopCars from "./topCars";
 
 const HomePage = () => {
   return (
@@ -21,6 +22,8 @@ const HomePage = () => {
       <BookingSteps />
       <Marginer direction="vertical" margin="8em" />
       <AboutUs />
+      <Marginer direction="vertical" margin="8em" />
+      <TopCars />
     </PageContainer>
   )
 }
