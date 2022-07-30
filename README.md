@@ -47,9 +47,13 @@ yarn build
 
 ### Librairies utilisées dans ce projet :
 
-[Tailwind CSS](https://tailwindcss.com/) <br />
+CSS Framework : [Tailwind CSS](https://tailwindcss.com/) <br />
 Styled Components : [emotion/styled](https://emotion.sh/docs/introduction) <br />
+Media queries : [react-responsive](https://github.com/yocontra/react-responsive) <br />
+
+Menu en mobile : [react-burger-menu](http://negomi.github.io/react-burger-menu/) <br />
+Calendrier de réservation : [react-calendar](https://github.com/wojtekmaj/react-calendar) <br />
+Carousel : [brainhubeu__react-carousel](https://github.com/brainhubeu/react-carousel) <br />
+
 [Apollo GraphQL](https://www.apollographql.com/) <br />
 [Docker](https://www.docker.com/) <br />
-
-
