@@ -3,11 +3,12 @@ import styled from 'styled-components'
 import tw from "twin.macro";
 import {useMediaQuery} from "react-responsive";
 import {SCREENS} from "../../components/responsive";
+import MoonLoader from "react-spinners/MoonLoader"
 
 import Carousel, { Dots, slidesToShowPlugin } from "@brainhubeu/react-carousel";
 import "@brainhubeu/react-carousel/lib/style.css";
 
-import {ICar} from "../../../typings/car";
+//import {ICar} from "../../../typings/car";
 import Car from "../../components/car";
 import carService from "../../services/carService";
 import {GetCars_cars} from "../../services/carService/__generated__/GetCars";
@@ -23,9 +24,12 @@ const actionDispatch = (dispatch: Dispatch<any>) => ({
 
 const stateSelector = createSelector(makeSelectTopCars, topCars => ({ topCars }))
 
+const wait = (timeout: number) => new Promise( rs => setTimeout(rs, timeout))
+
 const TopCars = () => {
 
   const [current, setCurrent] = useState(0);
+  const [isLoading, setLoading] = useState(false)
 
   const isMobile = useMediaQuery({ maxWidth: SCREENS.sm })
 
@@ -33,11 +37,16 @@ const TopCars = () => {
   const { setTopCars } = actionDispatch(useDispatch())
 
   const fetchTopCars = async () => {
+    setLoading(true)
     const cars = await carService.getCars().catch( err => {
       console.log("Error: ", err)
     })
+
+    await wait(5000)
+
     console.log("Cars: ", cars)
     if (cars) setTopCars(cars)
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -75,36 +84,43 @@ const TopCars = () => {
 
      <Title>Explore Our Top Deals</Title>
 
-     {isEmptyTopCars && <EmptyCars>No Cars To Show!</EmptyCars>}
+     {isLoading && (
+       <LoadingContainer>
+         <MoonLoader loading size={20} />
+       </LoadingContainer>
+     )}
 
-     {!isEmptyTopCars && <CarsContainer>
+     {isEmptyTopCars && !isLoading && <EmptyCars>No Cars To Show!</EmptyCars>}
 
-       <Carousel
-         value={current}
-         onChange={setCurrent}
-         slides={cars}
-         plugins={[
-           "clickToChange",
-           { resolve: slidesToShowPlugin, options: { numberOfSlides: 3 }},
-         ]}
-         breakpoints={{
-           640: {
-             plugins: [
-               { resolve: slidesToShowPlugin, options: { numberOfSlides: 1 }},
-             ],
-           },
-           900: {
-             plugins: [
-               { resolve: slidesToShowPlugin, options: { numberOfSlides: 2 }},
-             ],
-           },
-         }}
-       />
+     {!isEmptyTopCars && !isLoading && (
+       <CarsContainer>
 
-       <Dots value={current} onChange={setCurrent} number={numberOfDots} />
+         <Carousel
+           value={current}
+           onChange={setCurrent}
+           slides={cars}
+           plugins={[
+             "clickToChange",
+             { resolve: slidesToShowPlugin, options: { numberOfSlides: 3 }},
+           ]}
+           breakpoints={{
+             640: {
+               plugins: [
+                 { resolve: slidesToShowPlugin, options: { numberOfSlides: 1 }},
+               ],
+             },
+             900: {
+               plugins: [
+                 { resolve: slidesToShowPlugin, options: { numberOfSlides: 2 }},
+               ],
+             },
+           }}
+         />
 
-     </CarsContainer>
-     }
+         <Dots value={current} onChange={setCurrent} number={numberOfDots} />
+
+       </CarsContainer>
+     )}
    </TopCarsContainer>
   )
 }
@@ -137,5 +153,9 @@ const CarsContainer = styled.div`
 
 const EmptyCars = styled.div`
   ${tw`w-full flex justify-center items-center text-sm text-gray-500`};
+`;
+
+const LoadingContainer = styled.div`
+  ${tw`w-full mt-9 flex justify-center items-center text-base text-black`};
 `;
 
