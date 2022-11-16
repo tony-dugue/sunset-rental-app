@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {Dispatch, useEffect, useState} from 'react'
 import styled from 'styled-components'
 import tw from "twin.macro";
 import {useMediaQuery} from "react-responsive";
@@ -10,6 +10,14 @@ import "@brainhubeu/react-carousel/lib/style.css";
 import {ICar} from "../../../typings/car";
 import Car from "../../components/car";
 import carService from "../../services/carService";
+import {GetCars_cars} from "../../services/carService/__generated__/GetCars";
+
+import { setTopCars } from './slice';
+import {useDispatch} from "react-redux";
+
+const actionDispatch = (dispatch: Dispatch<any>) => ({
+  setTopCars: (cars: GetCars_cars[]) => dispatch(setTopCars(cars)),
+});
 
 const TopCars = () => {
 
@@ -17,11 +25,14 @@ const TopCars = () => {
 
   const isMobile = useMediaQuery({ maxWidth: SCREENS.sm });
 
+  const { setTopCars } = actionDispatch(useDispatch());
+
   const fetchTopCars = async () => {
     const cars = await carService.getCars().catch( err => {
       console.log("Error: ", err)
     })
     console.log("Cars: ", cars)
+    if (cars) setTopCars(cars)
   }
 
   useEffect(() => {
