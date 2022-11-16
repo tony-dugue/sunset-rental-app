@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import styled from 'styled-components'
 import tw from "twin.macro";
 import {useMediaQuery} from "react-responsive";
@@ -9,12 +9,25 @@ import "@brainhubeu/react-carousel/lib/style.css";
 
 import {ICar} from "../../../typings/car";
 import Car from "../../components/car";
+import carService from "../../services/carService";
 
 const TopCars = () => {
 
   const [current, setCurrent] = useState(0);
 
   const isMobile = useMediaQuery({ maxWidth: SCREENS.sm });
+
+  const fetchTopCars = async () => {
+    const cars = await carService.getCars().catch( err => {
+      console.log("Error: ", err)
+    })
+    console.log("Cars: ", cars)
+  }
+
+  useEffect(() => {
+    fetchTopCars()
+  }, []);
+
 
   const testCar: ICar = {
     name: "Audi S3 Car",
