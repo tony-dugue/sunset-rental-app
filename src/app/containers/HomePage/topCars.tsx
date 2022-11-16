@@ -13,19 +13,24 @@ import carService from "../../services/carService";
 import {GetCars_cars} from "../../services/carService/__generated__/GetCars";
 
 import { setTopCars } from './slice';
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import { createSelector } from 'reselect';
+import {makeSelectTopCars} from "./selectors";
 
 const actionDispatch = (dispatch: Dispatch<any>) => ({
   setTopCars: (cars: GetCars_cars[]) => dispatch(setTopCars(cars)),
 });
 
+const stateSelector = createSelector(makeSelectTopCars, topCars => ({ topCars }))
+
 const TopCars = () => {
 
   const [current, setCurrent] = useState(0);
 
-  const isMobile = useMediaQuery({ maxWidth: SCREENS.sm });
+  const isMobile = useMediaQuery({ maxWidth: SCREENS.sm })
 
-  const { setTopCars } = actionDispatch(useDispatch());
+  const { topCars } = useSelector(stateSelector)
+  const { setTopCars } = actionDispatch(useDispatch())
 
   const fetchTopCars = async () => {
     const cars = await carService.getCars().catch( err => {
@@ -40,33 +45,39 @@ const TopCars = () => {
   }, []);
 
 
-  const testCar: ICar = {
-    name: "Audi S3 Car",
-    mileage: "10k",
-    thumbnailSrc: "https://cdn.jdpower.com/Models/640x480/2017-Audi-S3-PremiumPlus.jpg",
-    dailyPrice: 70,
-    monthlyPrice: 1600,
-    gearType: "Auto",
-    gas: "Petrol",
-  };
-  const testCar2: ICar = {
-    name: "HONDA cITY 5 Seater Car",
-    mileage: "20k",
-    thumbnailSrc: "https://shinewiki.com/wp-content/uploads/2019/11/honda-city.jpg",
-    dailyPrice: 50,
-    monthlyPrice: 1500,
-    gearType: "Auto",
-    gas: "Petrol",
-  };
+  // const testCar: ICar = {
+  //   name: "Audi S3 Car",
+  //   mileage: "10k",
+  //   thumbnailSrc: "https://cdn.jdpower.com/Models/640x480/2017-Audi-S3-PremiumPlus.jpg",
+  //   dailyPrice: 70,
+  //   monthlyPrice: 1600,
+  //   gearType: "Auto",
+  //   gas: "Petrol",
+  // };
+  // const testCar2: ICar = {
+  //   name: "HONDA cITY 5 Seater Car",
+  //   mileage: "20k",
+  //   thumbnailSrc: "https://shinewiki.com/wp-content/uploads/2019/11/honda-city.jpg",
+  //   dailyPrice: 50,
+  //   monthlyPrice: 1500,
+  //   gearType: "Auto",
+  //   gas: "Petrol",
+  // };
 
-  const cars = [<Car {...testCar}/>, <Car {...testCar2}/>, <Car {...testCar}/>, <Car {...testCar2}/>, <Car {...testCar}/>]
+  const isEmptyTopCars = !topCars || topCars.length === 0;
+
+  const cars = !isEmptyTopCars && topCars.map( car => <Car {...car} thumbnailSrc={car.thumbnailUrl} />) || []
 
   const numberOfDots = isMobile ? cars.length : Math.ceil(cars.length / 3);
 
   return (
    <TopCarsContainer>
+
      <Title>Explore Our Top Deals</Title>
-     <CarsContainer>
+
+     {isEmptyTopCars && <EmptyCars>No Cars To Show!</EmptyCars>}
+
+     {!isEmptyTopCars && <CarsContainer>
 
        <Carousel
          value={current}
@@ -93,6 +104,7 @@ const TopCars = () => {
        <Dots value={current} onChange={setCurrent} number={numberOfDots} />
 
      </CarsContainer>
+     }
    </TopCarsContainer>
   )
 }
@@ -122,3 +134,8 @@ const CarsContainer = styled.div`
     mt-7 md:mt-10
   `};
 `;
+
+const EmptyCars = styled.div`
+  ${tw`w-full flex justify-center items-center text-sm text-gray-500`};
+`;
+
